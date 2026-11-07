@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model TakaranBuah {
+  id                 Int      @id @default(autoincrement())
+  nama_buah          String   @unique
+  gram_per_cup_small Int
+  gram_per_cup_large Int
+  faktor_susut       Float
+  created_at         DateTime @default(now())
+
+  riwayat            RiwayatPerhitungan[]
+
+  @@map("takaran_buah")
+}
+
+model RiwayatPerhitungan {
+  id                   Int      @id @default(autoincrement())
+  fruit_id             Int
+  weight_kg            Float
+  cup_size             String
+  estimated_cups       Int
+  remaining_flesh_gram Float
+  created_at           DateTime @default(now())
+
+  fruit                TakaranBuah @relation(fields: [fruit_id], references: [id])
+
+  @@map("riwayat_perhitungan")
+}
