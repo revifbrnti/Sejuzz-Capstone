@@ -179,7 +179,7 @@ async function main() {
     {
       nama_buah: "Mix Berry",
       berat_rata_per_buah_gram: null,
-      faktor_susut: 0.0489,
+      faktor_susut: 0.0501,
       gram_per_cup_small: 200,
       gram_per_cup_large: 300,
       sumber_data: "asumsi_tim",
