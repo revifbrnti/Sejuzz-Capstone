@@ -14,10 +14,18 @@ const getFruits = async (req, res, next) => {
 const updateFruit = async (req, res, next) => {
   try {
     const { id } = req.params;
+    // Ambil HANYA field yang diizinkan (mencegah user mengubah id atau nama_buah)
+    const { gram_per_cup_small, gram_per_cup_large, faktor_susut } = req.body;
+
     const updatedFruit = await prisma.takaranBuah.update({
       where: { id: Number(id) },
-      data: req.body,
+      data: {
+        ...(gram_per_cup_small !== undefined && { gram_per_cup_small }),
+        ...(gram_per_cup_large !== undefined && { gram_per_cup_large }),
+        ...(faktor_susut !== undefined && { faktor_susut }),
+      },
     });
+
     res
       .status(200)
       .json({ message: "Takaran berhasil diubah", data: updatedFruit });

@@ -2,15 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { getFruits, updateFruit } = require("../controllers/fruitController");
 const validate = require("../middlewares/validate");
-const Joi = require("joi");
+const authMiddleware = require("../middlewares/authMiddleware"); // <-- Pastikan ini di-import
+const { updateSchema } = require("../validators/fruitValidator");
 
-const updateSchema = Joi.object({
-  gram_per_cup_small: Joi.number().integer().positive(),
-  gram_per_cup_large: Joi.number().integer().positive(),
-  faktor_susut: Joi.number().min(0).max(1),
-}).min(1);
-
+// Endpoint GET (Publik - Tanpa Login)
 router.get("/", getFruits);
-router.put("/:id", validate(updateSchema), updateFruit);
+
+// Endpoint PUT (Proteksi - Wajib Login)
+router.put("/:id", authMiddleware, validate(updateSchema), updateFruit);
 
 module.exports = router;

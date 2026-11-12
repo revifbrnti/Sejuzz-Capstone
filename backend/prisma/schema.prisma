@@ -7,28 +7,61 @@ datasource db {
 }
 
 model TakaranBuah {
-  id                 Int      @id @default(autoincrement())
-  nama_buah          String   @unique
-  gram_per_cup_small Int
-  gram_per_cup_large Int
-  faktor_susut       Float
-  created_at         DateTime @default(now())
+  id                         Int      @id @default(autoincrement())
+  nama_buah                  String   @unique
+  berat_rata_per_buah_gram   Int?     
+  gram_per_cup_small         Int
+  gram_per_cup_large         Int
+  faktor_susut               Float
+  kehilangan_produksi_persen Float    @default(0.0) 
+  
+  sumber_data                String?  
+  sumber_takaran             String?  
+  jumlah_sampel              Int?     
+  created_at                 DateTime @default(now())
 
-  riwayat            RiwayatPerhitungan[]
+  riwayat                    RiwayatPerhitungan[]
 
   @@map("takaran_buah")
 }
 
 model RiwayatPerhitungan {
   id                   Int      @id @default(autoincrement())
-  fruit_id             Int
+  
+  fruit_id             Int?
+  // kombinasi_id DIHAPUS karena kita pakai logika dinamis
+  
   weight_kg            Float
   cup_size             String
   estimated_cups       Int
   remaining_flesh_gram Float
+  
+  cup_nyata            Int?     
+  tipe_input           String   @default("kg")  
+  nilai_input          Float    @default(0)     
   created_at           DateTime @default(now())
 
-  fruit                TakaranBuah @relation(fields: [fruit_id], references: [id])
+  fruit                TakaranBuah?  @relation(fields: [fruit_id], references: [id])
 
   @@map("riwayat_perhitungan")
+}
+
+model RiwayatChat {
+  id           Int      @id @default(autoincrement())
+  user_message String
+  ai_response  String
+  created_at   DateTime @default(now())
+
+  @@map("riwayat_chat")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique // <-- Diubah menjadi email
+  password     String
+  nama_lengkap String?
+  peran        String   @default("owner")
+  created_at   DateTime @default(now())
+
+  @@map("users")
 }
