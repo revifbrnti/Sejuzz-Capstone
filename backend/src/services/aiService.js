@@ -54,7 +54,7 @@ const tanyaFAQ = async (message) => {
   try {
     const response = await axios.post(
       `${process.env.AI_SERVICE_URL}/ai/faq`,
-      { message },
+      { question: message },
       {
         timeout: 30000,
         headers: { "X-API-Key": process.env.AI_API_KEY },
