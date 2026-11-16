@@ -4,7 +4,6 @@ const { hitungManual } = require("../services/helperService");
 const { mintaPenjelasanAI } = require("../services/aiService");
 
 const calculateEstimation = async (req, res, next) => {
-  // Tambahkan 'kehilangan_produksi_persen' dari body (opsional, default 0)
   const {
     fruitId,
     amount,
@@ -28,18 +27,9 @@ const calculateEstimation = async (req, res, next) => {
 
     const gramPerCup =
       cupSize === "small" ? fruit.gram_per_cup_small : fruit.gram_per_cup_large;
-
-    // Hitung total daging bersih SEBELUM kehilangan produksi
     const totalFleshGram = weightKg * 1000 * (1 - fruit.faktor_susut);
-
-    // Hitung potongan kehilangan produksi (jika ada)
     const lossGram = totalFleshGram * (kehilangan_produksi_persen / 100);
-
-    // Daging bersih yang benar-benar bisa diblender
     const netFleshGram = totalFleshGram - lossGram;
-
-    // --- KIRIM KE AI DENGAN BERAT YANG SUDAH DIKURANGI KEHILANGAN ---
-    // Tim AI hanya butuh tahu total berat buah utuh yang setara dengan netFleshGram ini
     const equivalentWeightKg = netFleshGram / (1 - fruit.faktor_susut) / 1000;
 
     const payloadKeAI = {
@@ -63,7 +53,7 @@ const calculateEstimation = async (req, res, next) => {
 
       hasilHitung = {
         skinWeight: Number((weightKg * fruit.faktor_susut).toFixed(2)),
-        fleshWeight: Number((netFleshGram / 1000).toFixed(2)), // Daging bersih setelah loss
+        fleshWeight: Number((netFleshGram / 1000).toFixed(2)),
         estimatedCups: aiResponse.jumlah_cup,
         remainingFleshGram: aiResponse.sisa_buah_gram || 0,
       };
@@ -71,13 +61,11 @@ const calculateEstimation = async (req, res, next) => {
       console.warn("AI gagal, pakai fallback lokal.");
       dihitungOleh = "Local_Fallback";
 
-      // Fallback juga harus menghitung loss
       const hasilManual = hitungManual(
         weightKg,
         fruit.faktor_susut,
         gramPerCup,
       );
-      // Kita sesuaikan hasil manual dengan loss
       const estimasiManualCups = Math.floor(netFleshGram / gramPerCup);
       const sisaManual = netFleshGram - estimasiManualCups * gramPerCup;
 
@@ -91,7 +79,6 @@ const calculateEstimation = async (req, res, next) => {
         "AI sedang sibuk, hasil dihitung dengan rumus standar (termasuk kehilangan produksi).";
     }
 
-    // Simpan ke database
     await prisma.riwayatPerhitungan.create({
       data: {
         fruit_id: fruitId,
@@ -109,7 +96,7 @@ const calculateEstimation = async (req, res, next) => {
       data: {
         fruitName: fruit.nama_buah,
         weightKgUsed: Number(weightKg.toFixed(2)),
-        kehilangan_produksi_persen: kehilangan_produksi_persen, // Tampilkan untuk konfirmasi
+        kehilangan_produksi_persen: kehilangan_produksi_persen,
         ...hasilHitung,
         aiInsight,
         dihitungOleh,

@@ -3,12 +3,10 @@ const { hitungDariAI } = require("../services/calculatorService");
 const { hitungManual } = require("../services/helperService");
 
 const calculateCombination = async (req, res, next) => {
-  // Frontend mengirim 2 buah sekaligus
   const { fruitA_id, amountA, unitA, fruitB_id, amountB, unitB, cupSize } =
     req.body;
 
   try {
-    // --- PROSES BUAH A ---
     const fruitA = await prisma.takaranBuah.findUnique({
       where: { id: fruitA_id },
     });
@@ -44,7 +42,6 @@ const calculateCombination = async (req, res, next) => {
       };
     }
 
-    // --- PROSES BUAH B ---
     const fruitB = await prisma.takaranBuah.findUnique({
       where: { id: fruitB_id },
     });
@@ -80,12 +77,9 @@ const calculateCombination = async (req, res, next) => {
       };
     }
 
-    // --- GABUNGKAN HASIL & SIMPAN KE DATABASE ---
     const totalCups = hasilA.cups + hasilB.cups;
     const totalSisa = hasilA.sisa + hasilB.sisa;
 
-    // Kita simpan riwayatnya di tabel riwayat_perhitungan
-    // fruit_id diisi dengan ID Buah A, weight_kg dijumlahkan
     await prisma.riwayatPerhitungan.create({
       data: {
         fruit_id: fruitA_id,
@@ -93,8 +87,8 @@ const calculateCombination = async (req, res, next) => {
         cup_size: cupSize,
         estimated_cups: totalCups,
         remaining_flesh_gram: totalSisa,
-        tipe_input: "kombinasi", // Penanda bahwa ini adalah hitungan kombinasi
-        nilai_input: amountA + amountB, // Simplifikasi input
+        tipe_input: "kombinasi",
+        nilai_input: amountA + amountB,
       },
     });
 

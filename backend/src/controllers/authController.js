@@ -5,7 +5,6 @@ const prisma = require("../config/db");
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Validasi input sederhana
   if (!email || !password) {
     return res.status(400).json({ error: "Email dan password wajib diisi" });
   }
@@ -24,7 +23,6 @@ const login = async (req, res, next) => {
       return res.status(401).json({ error: "Email atau password salah" });
     }
 
-    // Buat Token JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, peran: user.peran },
       process.env.JWT_SECRET || "rahasia_sejuzz_default",

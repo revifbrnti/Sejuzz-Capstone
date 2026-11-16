@@ -175,7 +175,6 @@ async function main() {
       sumber_takaran: "data_contoh",
       jumlah_sampel: 100,
     },
-    // Mix Berry tetap ada karena dianggap 1 entitas beli per berat
     {
       nama_buah: "Mix Berry",
       berat_rata_per_buah_gram: null,
@@ -188,13 +187,11 @@ async function main() {
     },
   ];
 
-  // Hapus data lama agar bersih
   console.log("Menghapus data lama...");
   await prisma.riwayatChat.deleteMany({});
   await prisma.riwayatPerhitungan.deleteMany({});
   await prisma.takaranBuah.deleteMany({});
 
-  // Masukkan data baru
   console.log("Memasukkan 18 data buah final...");
   for (const buah of dataBuah) {
     await prisma.takaranBuah.create({
@@ -202,14 +199,13 @@ async function main() {
     });
   }
 
-  // 3. Buat Akun Owner Default
   console.log("Membuat akun Owner default...");
   const hashedPassword = await bcrypt.hash("sejuzz123", 10);
   await prisma.user.upsert({
-    where: { email: "owner@sejuzz.com" }, // Gunakan upsert agar tidak error jika dijalankan 2x
+    where: { email: "owner@sejuzz.com" },
     update: {},
     create: {
-      email: "owner@sejuzz.com", // <-- Ubah ke email
+      email: "owner@sejuzz.com",
       password: hashedPassword,
       nama_lengkap: "Sean Conery",
       peran: "owner",

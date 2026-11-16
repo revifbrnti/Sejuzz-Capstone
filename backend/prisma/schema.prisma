@@ -28,9 +28,7 @@ model TakaranBuah {
 model RiwayatPerhitungan {
   id                   Int      @id @default(autoincrement())
   
-  fruit_id             Int?
-  // kombinasi_id DIHAPUS karena kita pakai logika dinamis
-  
+  fruit_id             Int?  
   weight_kg            Float
   cup_size             String
   estimated_cups       Int
@@ -57,7 +55,7 @@ model RiwayatChat {
 
 model User {
   id           Int      @id @default(autoincrement())
-  email        String   @unique // <-- Diubah menjadi email
+  email        String   @unique 
   password     String
   nama_lengkap String?
   peran        String   @default("owner")

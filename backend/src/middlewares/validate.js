@@ -1,7 +1,7 @@
 const validate = (schema) => (req, res, next) => {
   const { error, value } = schema.validate(req.body, {
     abortEarly: false,
-    stripUnknown: true, // <-- Membuang data sampah yang tidak ada di schema Joi
+    stripUnknown: true,
   });
 
   if (error) {
@@ -10,7 +10,7 @@ const validate = (schema) => (req, res, next) => {
     });
   }
 
-  req.body = value; // Gunakan data yang sudah bersih
+  req.body = value;
   next();
 };
 module.exports = validate;

@@ -8,7 +8,7 @@ const hitungDariAI = async (payload) => {
       {
         timeout: 5000,
         headers: {
-          "X-API-Key": process.env.AI_API_KEY, // <-- Memanggil kunci dari .env
+          "X-API-Key": process.env.AI_API_KEY,
         },
       },
     );

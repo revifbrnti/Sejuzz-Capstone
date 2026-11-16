@@ -1,7 +1,6 @@
 const axios = require("axios");
 const prisma = require("../config/db");
 
-// 1. Fungsi Chatbot (Untuk percakapan interaktif)
 const chatDenganAI = async (message) => {
   try {
     const semuaBuah = await prisma.takaranBuah.findMany();
@@ -34,22 +33,78 @@ const chatDenganAI = async (message) => {
   }
 };
 
-// 2. Fungsi BARU: Minta Penjelasan AI (Insight dari LLM)
 const mintaPenjelasanAI = async (payload) => {
   try {
     const response = await axios.post(
       `${process.env.AI_SERVICE_URL}/ai/explain`,
       payload,
       {
-        timeout: 60000, // LLM butuh waktu lama
+        timeout: 60000,
         headers: { "X-API-Key": process.env.AI_API_KEY },
       },
     );
-    return response.data; // Berisi { calculation, explanation, source, model }
+    return response.data;
   } catch (error) {
     console.error("AI Explain Error:", error.message);
-    return null; // Kembalikan null agar tidak crash
+    return null;
   }
 };
 
-module.exports = { chatDenganAI, mintaPenjelasanAI };
+const tanyaFAQ = async (message) => {
+  try {
+    const response = await axios.post(
+      `${process.env.AI_SERVICE_URL}/ai/faq`,
+      { message },
+      {
+        timeout: 30000,
+        headers: { "X-API-Key": process.env.AI_API_KEY },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("AI FAQ Error:", error.message);
+    throw new Error("AI_FAQ_DOWN");
+  }
+};
+
+const analisisSentimen = async (teks) => {
+  try {
+    const response = await axios.post(
+      `${process.env.AI_SERVICE_URL}/sentimen`,
+      { teks },
+      {
+        timeout: 30000,
+        headers: { "X-API-Key": process.env.AI_API_KEY },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("AI Sentimen Error:", error.message);
+    throw new Error("AI_SENTIMEN_DOWN");
+  }
+};
+
+const analisisSentimenBatch = async (daftarTeks) => {
+  try {
+    const response = await axios.post(
+      `${process.env.AI_SERVICE_URL}/sentimen/batch`,
+      { daftar_teks: daftarTeks },
+      {
+        timeout: 60000,
+        headers: { "X-API-Key": process.env.AI_API_KEY },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("AI Sentimen Batch Error:", error.message);
+    throw new Error("AI_SENTIMEN_DOWN");
+  }
+};
+
+module.exports = {
+  chatDenganAI,
+  mintaPenjelasanAI,
+  tanyaFAQ,
+  analisisSentimen,
+  analisisSentimenBatch,
+};

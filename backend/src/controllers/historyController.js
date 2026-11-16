@@ -1,6 +1,5 @@
 const prisma = require("../config/db");
 
-// GET /api/v1/history
 const getHistory = async (req, res, next) => {
   try {
     const history = await prisma.riwayatPerhitungan.findMany({
@@ -13,7 +12,6 @@ const getHistory = async (req, res, next) => {
   }
 };
 
-// PATCH /api/v1/history/:id (Untuk input cup_nyata)
 const updateActualCup = async (req, res, next) => {
   const { id } = req.params;
   const { cup_nyata } = req.body;
@@ -32,7 +30,6 @@ const updateActualCup = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/accuracy
 const getAccuracy = async (req, res, next) => {
   try {
     const data = await prisma.riwayatPerhitungan.findMany({
