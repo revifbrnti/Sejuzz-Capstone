@@ -63,3 +63,14 @@ model User {
 
   @@map("users")
 }
+
+model UlasanPelanggan {
+  id         Int      @id @default(autoincrement())
+  teks       String
+  sentimen   String   // "positif", "negatif", atau "perlu dicek"
+  skor       Float
+  yakin      Boolean
+  created_at DateTime @default(now())
+
+  @@map("ulasan_pelanggan")
+}

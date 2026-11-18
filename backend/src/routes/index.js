@@ -31,6 +31,7 @@ router.get("/chat/history", async (req, res, next) => {
     next(err);
   }
 });
+router.get("/sentimen", aiController.getUlasan);
 
 router.post("/calculate-target", targetController.calculateTargetCup);
 router.post(

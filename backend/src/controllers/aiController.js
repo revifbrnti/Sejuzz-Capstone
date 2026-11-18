@@ -3,6 +3,7 @@ const {
   analisisSentimen,
   analisisSentimenBatch,
 } = require("../services/aiService");
+const prisma = require("../config/db");
 
 const handleFAQ = async (req, res, next) => {
   const { message } = req.body;
@@ -23,13 +24,34 @@ const handleSentimen = async (req, res, next) => {
   const { teks } = req.body;
   try {
     const result = await analisisSentimen(teks);
-    res.status(200).json({ status: "success", data: result });
+
+    const savedUlasan = await prisma.ulasanPelanggan.create({
+      data: {
+        teks: result.teks,
+        sentimen: result.sentimen,
+        skor: result.skor,
+        yakin: result.yakin,
+      },
+    });
+
+    res.status(200).json({ status: "success", data: savedUlasan });
   } catch (error) {
     if (error.message === "AI_SENTIMEN_DOWN") {
       return res
         .status(503)
         .json({ error: "Layanan Analisis Sentimen sedang sibuk." });
     }
+    next(error);
+  }
+};
+
+const getUlasan = async (req, res, next) => {
+  try {
+    const ulasan = await prisma.ulasanPelanggan.findMany({
+      orderBy: { created_at: "desc" },
+    });
+    res.status(200).json({ status: "success", data: ulasan });
+  } catch (error) {
     next(error);
   }
 };
@@ -49,4 +71,4 @@ const handleSentimenBatch = async (req, res, next) => {
   }
 };
 
-module.exports = { handleFAQ, handleSentimen, handleSentimenBatch };
+module.exports = { handleFAQ, handleSentimen, getUlasan, handleSentimenBatch };
